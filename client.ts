@@ -28,7 +28,7 @@ export type ClientOptions = {
 /**
  * Client is a wrapper of a session to send requests and notifications.
  *
- * ```ts
+ * ```ts ignore
  * import { assert, is } from "@core/unknownutil";
  * import { channel } from "@lambdalisue/streamtools";
  * import { Session, Client } from "@lambdalisue/messagepack-rpc";
