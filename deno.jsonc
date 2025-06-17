@@ -1,6 +1,5 @@
 {
   "name": "@lambdalisue/messagepack-rpc",
-  "version": "0.0.0",
   "exports": {
     ".": "./mod.ts",
     "./client": "./client.ts",
