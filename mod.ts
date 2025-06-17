@@ -9,7 +9,7 @@
  *
  * ### Server
  *
- * ```typescript
+ * ```typescript ignore
  * import { assert, is } from "@core/unknownutil";
  * import { Session } from "@lambdalisue/messagepack-rpc";
  *
@@ -42,7 +42,7 @@
  *
  * ### Client
  *
- * ```typescript
+ * ```typescript ignore
  * import { Client, Session } from "@lambdalisue/messagepack-rpc";
  *
  * const conn = await Deno.connect({ hostname: "localhost", port: 8080 });

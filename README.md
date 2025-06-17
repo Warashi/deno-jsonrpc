@@ -15,7 +15,7 @@ This is a TypeScript module that allows for the implementation of
 
 ### Server
 
-```typescript
+```typescript ignore
 import { assert, is } from "@core/unknownutil";
 import { Session } from "@lambdalisue/messagepack-rpc";
 
@@ -48,7 +48,7 @@ for await (const conn of listener) {
 
 ### Client
 
-```typescript
+```typescript ignore
 import { Client, Session } from "@lambdalisue/messagepack-rpc";
 
 const conn = await Deno.connect({ hostname: "localhost", port: 8080 });
