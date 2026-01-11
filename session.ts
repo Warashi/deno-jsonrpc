@@ -1,5 +1,6 @@
 import { Reservator } from "@lambdalisue/reservator";
-import { DecodeStream, EncodeStream } from "@lambdalisue/messagepack";
+import { TextLineStream } from "@std/streams";
+import { JsonParseStream, JsonStringifyStream } from "@std/json";
 import { type Channel, channel } from "@core/streamutil";
 import { dispatch, type Dispatcher } from "./dispatcher.ts";
 import {
@@ -160,7 +161,9 @@ export class Session {
 
     // outer -> inner
     const consumer = this.#outer.reader
-      .pipeThrough(new DecodeStream())
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TextLineStream())
+      .pipeThrough(new JsonParseStream())
       .pipeTo(
         new WritableStream({ write: (m) => this.#handleMessage(m) }),
         { signal: consumerController.signal },
@@ -173,7 +176,8 @@ export class Session {
 
     // inner -> outer
     const producer = this.#inner.reader
-      .pipeThrough(new EncodeStream<Message>())
+      .pipeThrough(new JsonStringifyStream())
+      .pipeThrough(new TextEncoderStream())
       .pipeTo(this.#outer.writer, { signal: producerController.signal })
       .catch(ignoreShutdownError);
 
