@@ -22,7 +22,7 @@ export type SessionOptions = {
 };
 
 /**
- * Session represents a JSON-RPC session.
+ * Session represents a JSON-RPC 2.0 session.
  *
  * Use `Client` to call or notify the methods of the remote.
  *
@@ -72,7 +72,7 @@ export class Session {
 
   /**
    * The callback to handle invalid messages.
-   * Invalid messages are messages that are not a request, a response, or a notification of JSON-RPC.
+   * Invalid messages are messages that are not a request, a response, or a notification of JSON-RPC 2.0.
    * The default behavior is to ignore invalid messages.
    */
   onInvalidMessage?: (message: unknown) => void;

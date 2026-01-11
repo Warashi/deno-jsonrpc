@@ -19,7 +19,7 @@ export type DispatcherFrom<T> = {
  */
 export class NoMethodFoundError extends Error {
   constructor(method: string) {
-    super(`No JSON-RPC method '${method}' exists`);
+    super(`No JSON-RPC 2.0 method '${method}' exists`);
     this.name = this.constructor.name;
   }
 }

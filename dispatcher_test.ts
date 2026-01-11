@@ -33,7 +33,7 @@ Deno.test("dispatch", async (t) => {
       await assertRejects(
         () => dispatch(dispatcher, "foo", []),
         Error,
-        "No JSON-RPC method",
+        "No JSON-RPC 2.0 method",
       );
     },
   );
