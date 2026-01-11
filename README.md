@@ -3,8 +3,9 @@
 [![JSR](https://jsr.io/badges/@warashi/jsonrpc)](https://jsr.io/@warashi/jsonrpc)
 [![Test](https://github.com/Warashi/deno-jsonrpc/workflows/Test/badge.svg)](https://github.com/Warashi/deno-jsonrpc/actions?query=workflow%3ATest)
 
-This is a TypeScript module that allows for the implementation of [JSON-RPC 2.0].
-This implementation is fork of [lambdalisue/deno-messagepack-rpc].
+This is a TypeScript module that allows for the implementation of
+[JSON-RPC 2.0]. This implementation is fork of
+[lambdalisue/deno-messagepack-rpc].
 
 [deno]: https://deno.land/
 [JSON-RPC 2.0]: https://www.jsonrpc.org/specification
@@ -65,8 +66,8 @@ console.log(await client.call("sum", 2, 3)); // 5
 await session.shutdown();
 ```
 
-This module supports bidirectional communication.
-Therefore, APIs defined on the client side can be called from the server side.
+This module supports bidirectional communication. Therefore, APIs defined on the
+client side can be called from the server side.
 
 ## License
 

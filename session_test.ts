@@ -16,13 +16,7 @@ import {
 } from "@std/testing/mock";
 import { promiseState } from "@lambdalisue/async";
 import { decode, encode } from "@lambdalisue/messagepack";
-import {
-  type Channel,
-  channel,
-  collect,
-  pop,
-  push,
-} from "@core/streamutil";
+import { type Channel, channel, collect, pop, push } from "@core/streamutil";
 import { AlreadyReservedError } from "@lambdalisue/reservator";
 import {
   buildNotificationMessage,
