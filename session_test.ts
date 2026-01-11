@@ -301,6 +301,30 @@ Deno.test("Session.wait", async (t) => {
       assertEquals(await promiseState(waiter), "fulfilled");
     },
   );
+
+  await t.step(
+    "rejects when the writer fails",
+    async () => {
+      const input = channel<Uint8Array>();
+      const session = new Session(
+        input.reader,
+        new WritableStream({
+          write() {
+            throw new Error("write error");
+          },
+        }),
+      );
+
+      session.start();
+      await session.send(buildRequestMessage(1, "sum", [1, 2]));
+      await input.writer.close();
+      await assertRejects(
+        () => session.wait(),
+        Error,
+        "write error",
+      );
+    },
+  );
 });
 
 Deno.test("Session.shutdown", async (t) => {
