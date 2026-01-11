@@ -15,7 +15,6 @@ import {
   stub,
 } from "@std/testing/mock";
 import { promiseState } from "@lambdalisue/async";
-import { decode, encode } from "@lambdalisue/messagepack";
 import { type Channel, channel, collect, pop, push } from "@core/streamutil";
 import { AlreadyReservedError } from "@lambdalisue/reservator";
 import {
@@ -24,6 +23,15 @@ import {
   buildResponseMessage,
 } from "./message.ts";
 import { Session } from "./session.ts";
+
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+const encodeJsonLine = (message: unknown): Uint8Array =>
+  textEncoder.encode(`${JSON.stringify(message)}\n`);
+
+const decodeJsonLine = (payload: Uint8Array): unknown =>
+  JSON.parse(textDecoder.decode(payload).trim());
 
 function createDummySession(): {
   input: Channel<Uint8Array>;
@@ -68,7 +76,7 @@ Deno.test("Session.send", async (t) => {
       const message = buildRequestMessage(1, "sum", [1, 2]);
       await session.send(message);
       assertEquals(
-        decode(ensureNotNull(await pop(output.reader))),
+        decodeJsonLine(ensureNotNull(await pop(output.reader))),
         message,
       );
     },
@@ -112,7 +120,7 @@ Deno.test("Session.recv", async (t) => {
       session.start();
 
       const message = buildResponseMessage(1, null, 3);
-      push(input.writer, encode(message));
+      push(input.writer, encodeJsonLine(message));
       assertEquals(
         await session.recv(1),
         message,
@@ -151,12 +159,12 @@ Deno.test("Session.start", async (t) => {
       session.dispatcher = { sum };
       session.start();
 
-      await push(input.writer, encode(buildRequestMessage(1, "sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildRequestMessage(1, "sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(sum, 1);
       assertSpyCallArgs(sum, 0, [1, 2]);
       assertEquals(await collect(output.reader), [
-        encode(buildResponseMessage(1, null, 3)),
+        encodeJsonLine(buildResponseMessage(1, null, 3)),
       ]);
     },
   );
@@ -171,12 +179,12 @@ Deno.test("Session.start", async (t) => {
       session.dispatcher = { sum };
       session.start();
 
-      await push(input.writer, encode(buildRequestMessage(1, "sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildRequestMessage(1, "sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(sum, 1);
       assertSpyCallArgs(sum, 0, [1, 2]);
       assertEquals(await collect(output.reader), [
-        encode(
+        encodeJsonLine(
           buildResponseMessage(1, "sum error", null),
         ),
       ]);
@@ -191,7 +199,7 @@ Deno.test("Session.start", async (t) => {
       session.dispatcher = { sum };
       session.start();
 
-      await push(input.writer, encode(buildNotificationMessage("sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildNotificationMessage("sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(sum, 1);
       assertSpyCallArgs(sum, 0, [1, 2]);
@@ -209,7 +217,7 @@ Deno.test("Session.start", async (t) => {
       session.dispatcher = { sum };
       session.start();
 
-      await push(input.writer, encode(buildNotificationMessage("sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildNotificationMessage("sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(sum, 1);
       assertSpyCallArgs(sum, 0, [1, 2]);
@@ -369,7 +377,7 @@ Deno.test("Session.onInvalidMessage", async (t) => {
       session.onInvalidMessage = onInvalidMessage;
       session.start();
 
-      await push(input.writer, encode("invalid"));
+      await push(input.writer, encodeJsonLine("invalid"));
       await session.shutdown();
       assertSpyCalls(onInvalidMessage, 1);
       assertSpyCallArgs(onInvalidMessage, 0, ["invalid"]);
@@ -384,7 +392,7 @@ Deno.test("Session.onInvalidMessage", async (t) => {
       session.onInvalidMessage = onInvalidMessage;
       session.start();
 
-      await push(input.writer, encode([3, "invalid"]));
+      await push(input.writer, encodeJsonLine([3, "invalid"]));
       await session.shutdown();
       assertSpyCalls(onInvalidMessage, 1);
       assertSpyCallArgs(onInvalidMessage, 0, [[3, "invalid"]]);
@@ -411,7 +419,7 @@ Deno.test("Session.onMessageError", async (t) => {
       session.onMessageError = onMessageError;
       session.start();
 
-      await push(input.writer, encode(buildRequestMessage(1, "sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildRequestMessage(1, "sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(onMessageError, 1);
       assertIsError(
@@ -438,7 +446,7 @@ Deno.test("Session.onMessageError", async (t) => {
       session.onMessageError = onMessageError;
       session.start();
 
-      await push(input.writer, encode(buildResponseMessage(1, null, 3)));
+      await push(input.writer, encodeJsonLine(buildResponseMessage(1, null, 3)));
       await session.shutdown();
       assertSpyCalls(onMessageError, 1);
       assertIsError(
@@ -465,7 +473,7 @@ Deno.test("Session.onMessageError", async (t) => {
       session.onMessageError = onMessageError;
       session.start();
 
-      await push(input.writer, encode(buildNotificationMessage("sum", [1, 2])));
+      await push(input.writer, encodeJsonLine(buildNotificationMessage("sum", [1, 2])));
       await session.shutdown();
       assertSpyCalls(onMessageError, 1);
       assertIsError(onMessageError.calls[0].args[0], Error, "sum error");
