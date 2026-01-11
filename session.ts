@@ -28,7 +28,7 @@ export type SessionOptions = {
  *
  * ```ts
  * import { assert, is } from "@core/unknownutil";
- * import { channel } from "@lambdalisue/streamtools";
+ * import { channel } from "@core/streamutil";
  * import { Session, Client } from "@warashi/jsonrpc";
  *
  * const input = channel<Uint8Array>();
