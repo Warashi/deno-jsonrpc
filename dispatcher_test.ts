@@ -1,5 +1,9 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { dispatch, type Dispatcher, type DispatcherFrom } from "./dispatcher.ts";
+import {
+  dispatch,
+  type Dispatcher,
+  type DispatcherFrom,
+} from "./dispatcher.ts";
 
 type A = {
   a: (a: number) => void;

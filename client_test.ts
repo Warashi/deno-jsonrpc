@@ -134,29 +134,32 @@ Deno.test("Client.call", async (t) => {
     assertSpyCalls(recv, 1);
   });
 
-  await t.step("rejects with a deserialized error when response has error", async () => {
-    using send = stub(session, "send", resolvesNext([undefined]));
-    using recv = stub(
-      session,
-      "recv",
-      (msgid: number) =>
-        Promise.resolve(buildResponseMessage(msgid, "oops", null)),
-    );
-    const errorDeserializer = spy(
-      (err: unknown) => new Error(`decoded:${err}`),
-    );
-    const client = new Client(session, { errorDeserializer });
+  await t.step(
+    "rejects with a deserialized error when response has error",
+    async () => {
+      using send = stub(session, "send", resolvesNext([undefined]));
+      using recv = stub(
+        session,
+        "recv",
+        (msgid: number) =>
+          Promise.resolve(buildResponseMessage(msgid, "oops", null)),
+      );
+      const errorDeserializer = spy(
+        (err: unknown) => new Error(`decoded:${err}`),
+      );
+      const client = new Client(session, { errorDeserializer });
 
-    await assertRejects(
-      () => client.call("foo", "bar"),
-      Error,
-      "decoded:oops",
-    );
-    assertSpyCalls(send, 1);
-    assertSpyCalls(recv, 1);
-    assertSpyCalls(errorDeserializer, 1);
-    assertSpyCallArgs(errorDeserializer, 0, ["oops"]);
-  });
+      await assertRejects(
+        () => client.call("foo", "bar"),
+        Error,
+        "decoded:oops",
+      );
+      assertSpyCalls(send, 1);
+      assertSpyCalls(recv, 1);
+      assertSpyCalls(errorDeserializer, 1);
+      assertSpyCallArgs(errorDeserializer, 0, ["oops"]);
+    },
+  );
 });
 
 Deno.test("Client.notify", async (t) => {
