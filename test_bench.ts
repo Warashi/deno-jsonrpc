@@ -1,4 +1,4 @@
-import { channel } from "@lambdalisue/streamtools";
+import { channel } from "@core/streamutil";
 import { assertEquals } from "@std/assert";
 import { assert, is } from "@core/unknownutil";
 import { Client, Session } from "./mod.ts";

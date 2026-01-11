@@ -1,6 +1,6 @@
 import { Reservator } from "@lambdalisue/reservator";
 import { DecodeStream, EncodeStream } from "@lambdalisue/messagepack";
-import { type Channel, channel } from "@lambdalisue/streamtools";
+import { type Channel, channel } from "@core/streamutil";
 import { dispatch, type Dispatcher } from "./dispatcher.ts";
 import {
   buildResponseMessage,

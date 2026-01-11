@@ -22,7 +22,7 @@ import {
   collect,
   pop,
   push,
-} from "@lambdalisue/streamtools";
+} from "@core/streamutil";
 import { AlreadyReservedError } from "@lambdalisue/reservator";
 import {
   buildNotificationMessage,

@@ -1,5 +1,5 @@
 import { assert, assertEquals, assertRejects } from "@std/assert";
-import { channel } from "@lambdalisue/streamtools";
+import { channel } from "@core/streamutil";
 import { Session } from "./session.ts";
 import { Client } from "./client.ts";
 
