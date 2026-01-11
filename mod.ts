@@ -1,8 +1,10 @@
 /**
  * This is a TypeScript module that allows for the implementation of [JSON-RPC].
+ * This implementation is fork of [lambdalisue/deno-messagepack-rpc].
  *
  * [deno]: https://deno.land/
  * [JSON-RPC]: https://www.jsonrpc.org/specification
+ * [lambdalisue/deno-messagepack-rpc]: https://github.com/lambdalisue/deno-messagepack-rpc
  *
  * ## Usage
  *
@@ -59,8 +61,8 @@
  * await session.shutdown();
  * ```
  *
- * This module supports bidirectional communication. Therefore, APIs defined on
- * the client side can be called from the server side.
+ * This module supports bidirectional communication.
+ * Therefore, APIs defined on the client side can be called from the server side.
  *
  * @module
  */

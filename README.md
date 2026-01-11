@@ -1,15 +1,14 @@
-# messagepack-rpc
+# jsonrpc
 
-[![JSR](https://jsr.io/badges/@lambdalisue/messagepack-rpc)](https://jsr.io/@lambdalisue/messagepack-rpc)
-[![Test](https://github.com/lambdalisue/deno-messagepack-rpc/workflows/Test/badge.svg)](https://github.com/lambdalisue/deno-messagepack-rpc/actions?query=workflow%3ATest)
-[![codecov](https://codecov.io/github/lambdalisue/deno-messagepack-rpc/branch/main/graph/badge.svg?token=gXooPigw0y)](https://codecov.io/github/lambdalisue/deno-messagepack-rpc)
+[![JSR](https://jsr.io/badges/@warashi/jsonrpc)](https://jsr.io/@warashi/jsonrpc)
+[![Test](https://github.com/Warashi/deno-jsonrpc/workflows/Test/badge.svg)](https://github.com/Warashi/deno-jsonrpc/actions?query=workflow%3ATest)
 
-This is a TypeScript module that allows for the implementation of
-[MessagePack-RPC] using [MessagePack] as the message schema.
+This is a TypeScript module that allows for the implementation of [JSON-RPC].
+This implementation is fork of [lambdalisue/deno-messagepack-rpc].
 
 [deno]: https://deno.land/
-[MessagePack]: https://github.com/msgpack/msgpack/blob/master/spec.md
-[MessagePack-RPC]: https://github.com/msgpack-rpc/msgpack-rpc
+[JSON-RPC]: https://www.jsonrpc.org/specification
+[lambdalisue/deno-messagepack-rpc]: https://github.com/lambdalisue/deno-messagepack-rpc
 
 ## Usage
 
@@ -17,7 +16,7 @@ This is a TypeScript module that allows for the implementation of
 
 ```typescript ignore
 import { assert, is } from "@core/unknownutil";
-import { Session } from "@lambdalisue/messagepack-rpc";
+import { Session } from "@warashi/jsonrpc";
 
 async function handleConnection(conn: Deno.Conn): Promise<void> {
   const session = new Session(conn.readable, conn.writable);
@@ -49,7 +48,7 @@ for await (const conn of listener) {
 ### Client
 
 ```typescript ignore
-import { Client, Session } from "@lambdalisue/messagepack-rpc";
+import { Client, Session } from "@warashi/jsonrpc";
 
 const conn = await Deno.connect({ hostname: "localhost", port: 8080 });
 const session = new Session(conn.readable, conn.writable);
@@ -66,9 +65,8 @@ console.log(await client.call("sum", 2, 3)); // 5
 await session.shutdown();
 ```
 
-Although the original MessagePack-RPC specification does not mention
-bidirectional communication, this module supports it. Therefore, APIs defined on
-the client side can be called from the server side.
+This module supports bidirectional communication.
+Therefore, APIs defined on the client side can be called from the server side.
 
 ## License
 
