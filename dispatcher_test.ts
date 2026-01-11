@@ -1,5 +1,5 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { dispatch, type DispatcherFrom } from "./dispatcher.ts";
+import { dispatch, type Dispatcher, type DispatcherFrom } from "./dispatcher.ts";
 
 type A = {
   a: (a: number) => void;
@@ -34,6 +34,33 @@ Deno.test("dispatch", async (t) => {
         () => dispatch(dispatcher, "foo", []),
         Error,
         "No JSON-RPC 2.0 method",
+      );
+    },
+  );
+
+  await t.step(
+    "rethrows type errors when the method exists",
+    async () => {
+      const dispatcher = {
+        foo: () => {
+          throw new TypeError("boom");
+        },
+      };
+      await assertRejects(
+        () => dispatch(dispatcher, "foo", []),
+        TypeError,
+        "boom",
+      );
+    },
+  );
+
+  await t.step(
+    "rethrows when the method exists but is not callable",
+    async () => {
+      const dispatcher = { foo: 1 } as unknown as Dispatcher;
+      await assertRejects(
+        () => dispatch(dispatcher, "foo", []),
+        TypeError,
       );
     },
   );
