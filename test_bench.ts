@@ -3,7 +3,7 @@ import { assertEquals } from "@std/assert";
 import { assert, is } from "@core/unknownutil";
 import { Client, Session } from "./mod.ts";
 
-Deno.bench("messagepack_rpc", { group: "bench", baseline: true }, async () => {
+Deno.bench("json_rpc", { group: "bench", baseline: true }, async () => {
   const serverToClient = channel<Uint8Array>();
   const clientToServer = channel<Uint8Array>();
   const serverSession = new Session(

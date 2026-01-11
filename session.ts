@@ -22,14 +22,14 @@ export type SessionOptions = {
 };
 
 /**
- * Session represents a MessagePack-RPC session.
+ * Session represents a JSON-RPC session.
  *
  * Use `Client` to call or notify the methods of the remote.
  *
  * ```ts
  * import { assert, is } from "@core/unknownutil";
  * import { channel } from "@lambdalisue/streamtools";
- * import { Session, Client } from "@lambdalisue/messagepack-rpc";
+ * import { Session, Client } from "@warashi/jsonrpc";
  *
  * const input = channel<Uint8Array>();
  * const output = channel<Uint8Array>();
@@ -72,7 +72,7 @@ export class Session {
 
   /**
    * The callback to handle invalid messages.
-   * Invalid messages are messages that are not a request, a response, or a notification of MessagePack-RPC.
+   * Invalid messages are messages that are not a request, a response, or a notification of JSON-RPC.
    * The default behavior is to ignore invalid messages.
    */
   onInvalidMessage?: (message: unknown) => void;

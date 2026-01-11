@@ -1,9 +1,8 @@
 /**
- * This is a TypeScript module that allows for the implementation of [MessagePack-RPC] using [MessagePack] as the message schema.
+ * This is a TypeScript module that allows for the implementation of [JSON-RPC].
  *
  * [deno]: https://deno.land/
- * [MessagePack]: https://github.com/msgpack/msgpack/blob/master/spec.md
- * [MessagePack-RPC]: https://github.com/msgpack-rpc/msgpack-rpc
+ * [JSON-RPC]: https://www.jsonrpc.org/specification
  *
  * ## Usage
  *
@@ -11,7 +10,7 @@
  *
  * ```typescript ignore
  * import { assert, is } from "@core/unknownutil";
- * import { Session } from "@lambdalisue/messagepack-rpc";
+ * import { Session } from "@warashi/jsonrpc";
  *
  * async function handleConnection(conn: Deno.Conn): Promise<void> {
  *   const session = new Session(conn.readable, conn.writable);
@@ -43,7 +42,7 @@
  * ### Client
  *
  * ```typescript ignore
- * import { Client, Session } from "@lambdalisue/messagepack-rpc";
+ * import { Client, Session } from "@warashi/jsonrpc";
  *
  * const conn = await Deno.connect({ hostname: "localhost", port: 8080 });
  * const session = new Session(conn.readable, conn.writable);
@@ -60,8 +59,7 @@
  * await session.shutdown();
  * ```
  *
- * Although the original MessagePack-RPC specification does not mention
- * bidirectional communication, this module supports it. Therefore, APIs defined on
+ * This module supports bidirectional communication. Therefore, APIs defined on
  * the client side can be called from the server side.
  *
  * @module

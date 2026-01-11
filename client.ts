@@ -31,7 +31,7 @@ export type ClientOptions = {
  * ```ts ignore
  * import { assert, is } from "@core/unknownutil";
  * import { channel } from "@lambdalisue/streamtools";
- * import { Session, Client } from "@lambdalisue/messagepack-rpc";
+ * import { Session, Client } from "@warashi/jsonrpc";
  *
  * const input = channel<Uint8Array>();
  * const output = channel<Uint8Array>();
