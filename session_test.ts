@@ -192,6 +192,43 @@ Deno.test("Session.start", async (t) => {
   );
 
   await t.step(
+    "uses errorSerializer when a request handler throws",
+    async () => {
+      const input = channel<Uint8Array>();
+      const output = channel<Uint8Array>();
+      const errorSerializer = spy((err: unknown) => {
+        if (err instanceof Error) {
+          return { message: err.message };
+        }
+        return err;
+      });
+      const session = new Session(input.reader, output.writer, {
+        errorSerializer,
+      });
+      const sum = spy(() => {
+        throw new Error("sum error");
+      });
+      session.dispatcher = { sum };
+      session.start();
+
+      await push(input.writer, encodeJsonLine(buildRequestMessage(1, "sum", [1, 2])));
+      await session.shutdown();
+      assertSpyCalls(sum, 1);
+      assertSpyCalls(errorSerializer, 1);
+      assertIsError(
+        errorSerializer.calls[0].args[0],
+        Error,
+        "sum error",
+      );
+      assertEquals(await collect(output.reader), [
+        encodeJsonLine(
+          buildResponseMessage(1, { message: "sum error" }, null),
+        ),
+      ]);
+    },
+  );
+
+  await t.step(
     "invokes a method defined in `dispatcher` when a notification message is received",
     async () => {
       const { session, input, output } = createDummySession();
