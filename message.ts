@@ -3,31 +3,36 @@ import { is } from "@core/unknownutil";
 /**
  * Request message
  */
-export type RequestMessage = [
-  type: 0,
-  msgid: number,
-  method: string,
-  params: unknown[],
-];
+export type RequestMessage = {
+  jsonrpc: "2.0";
+  id: number;
+  method: string;
+  params?: unknown[];
+};
 
 /**
  * Response message
  */
-export type ResponseMessage = [
-  type: 1,
-  msgid: number,
-  error: null | unknown,
-  result: null | unknown,
-];
+export type ResponseMessage =
+  | {
+    jsonrpc: "2.0";
+    id: number;
+    result: unknown;
+  }
+  | {
+    jsonrpc: "2.0";
+    id: number;
+    error: unknown;
+  };
 
 /**
  * Notification message
  */
-export type NotificationMessage = [
-  type: 2,
-  method: string,
-  params: unknown[],
-];
+export type NotificationMessage = {
+  jsonrpc: "2.0";
+  method: string;
+  params?: unknown[];
+};
 
 /**
  * Message
@@ -39,7 +44,7 @@ export function buildRequestMessage(
   method: string,
   params: unknown[],
 ): RequestMessage {
-  return [0, msgid, method, params];
+  return { jsonrpc: "2.0", id: msgid, method, params };
 }
 
 export function buildResponseMessage(
@@ -47,14 +52,17 @@ export function buildResponseMessage(
   error: null | unknown,
   result: null | unknown,
 ): ResponseMessage {
-  return [1, msgid, error, result];
+  if (error === null) {
+    return { jsonrpc: "2.0", id: msgid, result };
+  }
+  return { jsonrpc: "2.0", id: msgid, error };
 }
 
 export function buildNotificationMessage(
   method: string,
   params: unknown[],
 ): NotificationMessage {
-  return [2, method, params];
+  return { jsonrpc: "2.0", method, params };
 }
 
 /**
@@ -64,22 +72,33 @@ export function buildNotificationMessage(
  * @returns `true` if the given value is a message, otherwise `false`.
  */
 export function isMessage(message: unknown): message is Message {
-  if (!is.Array(message)) {
+  if (!is.Record(message)) {
     return false;
   }
-  switch (message[0]) {
-    case 0: {
-      const [_, msgid, method, params] = message;
-      return is.Number(msgid) && is.String(method) && is.Array(params);
-    }
-    case 1: {
-      const [_, msgid, __, ___] = message;
-      return is.Number(msgid);
-    }
-    case 2: {
-      const [_, method, params] = message;
-      return is.String(method) && is.Array(params);
-    }
+  if (message.jsonrpc !== "2.0") {
+    return false;
   }
-  return false;
+  const hasMethod = "method" in message;
+  const hasId = "id" in message;
+  const hasResult = "result" in message;
+  const hasError = "error" in message;
+  if (hasMethod) {
+    if (!is.String(message.method)) {
+      return false;
+    }
+    if ("params" in message && !is.Array(message.params)) {
+      return false;
+    }
+    if (hasId) {
+      return is.Number(message.id);
+    }
+    return !hasResult && !hasError;
+  }
+  if (!hasId || !is.Number(message.id)) {
+    return false;
+  }
+  if (hasResult === hasError) {
+    return false;
+  }
+  return true;
 }

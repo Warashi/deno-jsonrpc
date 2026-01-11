@@ -80,11 +80,11 @@ export class Client {
   }
 
   async #recv(msgid: number): Promise<unknown> {
-    const [_, __, error, result] = await this.#session.recv(msgid);
-    if (error) {
-      throw this.#errorDeserializer(error);
+    const message = await this.#session.recv(msgid);
+    if ("error" in message) {
+      throw this.#errorDeserializer(message.error);
     }
-    return result;
+    return message.result;
   }
 
   /**

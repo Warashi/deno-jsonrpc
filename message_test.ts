@@ -9,7 +9,7 @@ import {
 Deno.test("buildRequestMessage", () => {
   assertEquals(
     buildRequestMessage(1, "sum", [1, 2]),
-    [0, 1, "sum", [1, 2]],
+    { jsonrpc: "2.0", id: 1, method: "sum", params: [1, 2] },
   );
 });
 
@@ -17,7 +17,7 @@ Deno.test("buildResponseMessage", async (t) => {
   await t.step("with result", () => {
     assertEquals(
       buildResponseMessage(1, null, 3),
-      [1, 1, null, 3],
+      { jsonrpc: "2.0", id: 1, result: 3 },
     );
   });
 
@@ -25,7 +25,7 @@ Deno.test("buildResponseMessage", async (t) => {
     const error = new Error("error");
     assertEquals(
       buildResponseMessage(1, error, null),
-      [1, 1, error, null],
+      { jsonrpc: "2.0", id: 1, error },
     );
   });
 });
@@ -33,28 +33,28 @@ Deno.test("buildResponseMessage", async (t) => {
 Deno.test("buildNotificationMessage", () => {
   assertEquals(
     buildNotificationMessage("sum", [1, 2]),
-    [2, "sum", [1, 2]],
+    { jsonrpc: "2.0", method: "sum", params: [1, 2] },
   );
 });
 
 Deno.test("isMessage", async (t) => {
   await t.step("with RequestMessage", () => {
     assertEquals(
-      isMessage([0, 1, "sum", [1, 2]]),
+      isMessage({ jsonrpc: "2.0", id: 1, method: "sum", params: [1, 2] }),
       true,
     );
   });
 
   await t.step("with ResponseMessage", () => {
     assertEquals(
-      isMessage([1, 1, null, 3]),
+      isMessage({ jsonrpc: "2.0", id: 1, result: 3 }),
       true,
     );
   });
 
   await t.step("with NotificationMessage", () => {
     assertEquals(
-      isMessage([2, "sum", [1, 2]]),
+      isMessage({ jsonrpc: "2.0", method: "sum", params: [1, 2] }),
       true,
     );
   });
@@ -68,7 +68,7 @@ Deno.test("isMessage", async (t) => {
 
   await t.step("with invalid message", () => {
     assertEquals(
-      isMessage([3, "sum", [1, 2]]),
+      isMessage({ jsonrpc: "2.0", id: 1, result: 3, error: "oops" }),
       false,
     );
   });

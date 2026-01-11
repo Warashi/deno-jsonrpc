@@ -29,13 +29,23 @@ Deno.test("Client.call", async (t) => {
 
     assertEquals(await client.call("foo", "bar"), "response:0");
     assertSpyCalls(send, 1);
-    assertSpyCallArgs(send, 0, [[0, 0, "foo", ["bar"]]]);
+    assertSpyCallArgs(send, 0, [{
+      jsonrpc: "2.0",
+      id: 0,
+      method: "foo",
+      params: ["bar"],
+    }]);
     assertSpyCalls(recv, 1);
     assertSpyCallArgs(recv, 0, [0]);
 
     assertEquals(await client.call("foo", "bar"), "response:1");
     assertSpyCalls(send, 2);
-    assertSpyCallArgs(send, 1, [[0, 1, "foo", ["bar"]]]);
+    assertSpyCallArgs(send, 1, [{
+      jsonrpc: "2.0",
+      id: 1,
+      method: "foo",
+      params: ["bar"],
+    }]);
     assertSpyCalls(recv, 2);
     assertSpyCallArgs(recv, 1, [1]);
   });
@@ -58,13 +68,23 @@ Deno.test("Client.call", async (t) => {
 
       assertEquals(await client1.call("foo", "bar"), "response:0");
       assertSpyCalls(send, 1);
-      assertSpyCallArgs(send, 0, [[0, 0, "foo", ["bar"]]]);
+      assertSpyCallArgs(send, 0, [{
+        jsonrpc: "2.0",
+        id: 0,
+        method: "foo",
+        params: ["bar"],
+      }]);
       assertSpyCalls(recv, 1);
       assertSpyCallArgs(recv, 0, [0]);
 
       assertEquals(await client2.call("foo", "bar"), "response:1");
       assertSpyCalls(send, 2);
-      assertSpyCallArgs(send, 1, [[0, 1, "foo", ["bar"]]]);
+      assertSpyCallArgs(send, 1, [{
+        jsonrpc: "2.0",
+        id: 1,
+        method: "foo",
+        params: ["bar"],
+      }]);
       assertSpyCalls(recv, 2);
       assertSpyCallArgs(recv, 1, [1]);
     },
@@ -121,11 +141,19 @@ Deno.test("Client.notify", async (t) => {
 
     await client.notify("foo", "bar");
     assertSpyCalls(send, 1);
-    assertSpyCallArgs(send, 0, [[2, "foo", ["bar"]]]);
+    assertSpyCallArgs(send, 0, [{
+      jsonrpc: "2.0",
+      method: "foo",
+      params: ["bar"],
+    }]);
 
     await client.notify("foo", "bar");
     assertSpyCalls(send, 2);
-    assertSpyCallArgs(send, 1, [[2, "foo", ["bar"]]]);
+    assertSpyCallArgs(send, 1, [{
+      jsonrpc: "2.0",
+      method: "foo",
+      params: ["bar"],
+    }]);
   });
 
   await t.step("rejects with an error when send fails", async () => {

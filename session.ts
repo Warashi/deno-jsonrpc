@@ -261,28 +261,27 @@ export class Session {
 
   #handleMessage(message: unknown): void {
     if (isMessage(message)) {
-      switch (message[0]) {
-        case 0:
+      if ("method" in message) {
+        if ("id" in message) {
           this.#handleRequestMessage(message);
           return;
-        case 1:
-          this.#handleResponseMessage(message);
-          return;
-        case 2:
-          this.#handleNotificationMessage(message);
-          return;
+        }
+        this.#handleNotificationMessage(message);
+        return;
       }
+      this.#handleResponseMessage(message);
+      return;
     }
     this.onInvalidMessage?.call(this, message);
   }
 
   async #handleRequestMessage(message: RequestMessage): Promise<void> {
     try {
-      const [_, msgid, method, params] = message;
-      const { error, result } = await this.#dispatch(method, params);
+      const { id, method, params } = message;
+      const { error, result } = await this.#dispatch(method, params ?? []);
       await this.send(
         buildResponseMessage(
-          msgid,
+          id,
           error ? this.#errorSerializer(error) : null,
           result,
         ),
@@ -294,9 +293,8 @@ export class Session {
 
   #handleResponseMessage(message: ResponseMessage): void {
     try {
-      const [_, msgid, __, ___] = message;
       const { reservator } = this.#running!;
-      reservator.resolve(msgid, message);
+      reservator.resolve(message.id, message);
     } catch (error) {
       this.onMessageError?.call(this, error, message);
     }
@@ -306,8 +304,8 @@ export class Session {
     message: NotificationMessage,
   ): Promise<void> {
     try {
-      const [_, method, params] = message;
-      const { error } = await this.#dispatch(method, params);
+      const { method, params } = message;
+      const { error } = await this.#dispatch(method, params ?? []);
       if (error) {
         throw error;
       }
